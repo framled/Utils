@@ -56,7 +56,8 @@ void Utilities::show(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& cloud, b
 void Utilities::getFiles(std::string path, std::vector<std::string>& output)
 {
 	boost::filesystem::path p(path);
-	for (auto i = boost::filesystem::directory_iterator(p); i != boost::filesystem::directory_iterator(); ++i)
+	boost::filesystem::directory_iterator i;
+	for (i = boost::filesystem::directory_iterator(p); i != boost::filesystem::directory_iterator(); ++i)
 	{
 		if (!is_directory(i->path()))
 		{
@@ -149,7 +150,7 @@ void Utilities::writePCDFile(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& clo
 	for (int i = 0; i < how_many_files; ++i) {
 		std::string extension(getExtension(path));
 		std::string str(path);
-		str.replace(str.find(extension), sizeof(extension) - 1, "_" + std::to_string(i) + extension);
+		str.replace(str.find(extension), sizeof(extension) - 1, "_" + boost::lexical_cast<std::string>(i) + extension);
 		std::vector<int> indices(getIndices((cloud->width * cloud->height) / how_many_files));
 		std::cout << cloud->width * cloud->height << std::endl;
 		pcl::io::savePCDFile(str, *cloud, indices);
@@ -162,7 +163,7 @@ void Utilities::writePCDFile(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& 
 	for (int i = 0; i < how_many_files; ++i) {
 		std::string extension(getExtension(path));
 		std::string str(path);
-		str.replace(str.find(extension), sizeof(extension) - 1, "_" + std::to_string(i) + extension);
+		str.replace(str.find(extension), sizeof(extension) - 1, "_" + boost::lexical_cast<std::string>(i) + extension);
 		std::vector<int> indices(getIndices((cloud->width * cloud->height) / how_many_files));
 		std::cout << cloud->width * cloud->height << std::endl;
 		pcl::io::savePCDFile (str, *cloud, indices);

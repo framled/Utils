@@ -21,6 +21,28 @@ Viewer<PointT>::run()
 		}*/
 	}
 }
+/*template<typename PointT> void
+Viewer<PointT>::cloud_cb_ (const ConstPtr &cloud)
+ {
+   if (!viewer->wasStopped()){
+	   if(!viewer->updatePointCloud(cloud,"PCL Cloud")){
+		   addCloud(cloud, true);
+	   }
+   }
+
+ }
+template<typename PointT> void
+Viewer<PointT>::runOpenni(){
+	pcl::Grabber* interface = new pcl::OpenNIGrabber();
+
+	boost::function<void (const ConstPtr&)> f = boost::bind (&Viewer::cloud_cb_, this, _1);
+
+	interface->registerCallback (f);
+
+	interface->start ();
+	run();
+	interface->stop ();
+}*/
 template<typename PointT> void 
 Viewer<PointT>::addCloud(const ConstPtr& cloud, bool isColored)
 {

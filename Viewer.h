@@ -4,7 +4,6 @@
 #include <pcl/point_types.h>
 #include <iostream>
 
-
 template<typename PointT>
 class Viewer
 {
@@ -13,6 +12,8 @@ public:
 	typedef typename PointCloud::ConstPtr ConstPtr;
 	Viewer();
 	void run();
+	//void runOpenni();
+	//void cloud_cb_(const ConstPtr &cloud);
 	void addCloud(const ConstPtr& cloud, bool isColored);
 	virtual ~Viewer();
 private:
