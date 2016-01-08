@@ -16,7 +16,7 @@ class Utilities
 public:
 	Utilities();
 	static void show(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& cloud);
-	static void show(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& cloud, bool with_color);
+	static void showColor(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& cloud);
 	static void getFiles(std::string path, std::vector<std::string>& output);
 	static void getFiles(char** argv, std::vector<int>& indices, std::vector<std::string>& output);
 	static void read(std::vector<std::string> paths, std::vector<pcl::PCLPointCloud2>& clouds_blob);

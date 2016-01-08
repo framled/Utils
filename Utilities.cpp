@@ -42,14 +42,14 @@ void Utilities::convert2XYZRGB(std::vector<pcl::PCLPointCloud2>& input, pcl::Poi
 void Utilities::show(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& cloud)
 {
 	Viewer<pcl::PointXYZ> viewer;
-	viewer.addCloud(cloud, false);
+	viewer.addCloud(cloud);
 	viewer.run();
 }
 
-void Utilities::show(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& cloud, bool with_color = true)
+void Utilities::showColor(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& cloud)
 {
 	Viewer<pcl::PointXYZRGB> viewer;
-	viewer.addCloud(cloud, with_color);
+	viewer.addCloud(cloud);
 	viewer.run();
 }
 

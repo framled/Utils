@@ -2,66 +2,40 @@
 
 
 template<typename PointT>
-Viewer<PointT>::Viewer() : viewer(new pcl::visualization::PCLVisualizer("PCL Cloud"))
+Viewer<PointT>::Viewer() : viewer(new pcl::visualization::PCLVisualizer("PCL Cloud")),
+	lastKeyPressed (),
+	firstPoint(),
+	secondPoint()
 {
+	this->isFirstPoint = true;
 }
-
 template<typename PointT> void 
 Viewer<PointT>::run()
 {
 	viewer->registerMouseCallback(&Viewer::mouse_callback, *this);
 	viewer->registerKeyboardCallback(&Viewer::keyboard_callback, *this);
+
+
 	while (!viewer->wasStopped())
 	{
 		viewer->spinOnce(100);
 		boost::this_thread::sleep(boost::posix_time::microseconds(100000));
-
-		/*if (GetKeyState(VK_ESCAPE) < 0) {
+		if(this->lastKeyPressed.compare("Escape") == 0){
 			break;
-		}*/
+		}
 	}
 }
-/*template<typename PointT> void
-Viewer<PointT>::cloud_cb_ (const ConstPtr &cloud)
- {
-   if (!viewer->wasStopped()){
-	   if(!viewer->updatePointCloud(cloud,"PCL Cloud")){
-		   addCloud(cloud, true);
-	   }
-   }
-
- }
-template<typename PointT> void
-Viewer<PointT>::runOpenni(){
-	pcl::Grabber* interface = new pcl::OpenNIGrabber();
-
-	boost::function<void (const ConstPtr&)> f = boost::bind (&Viewer::cloud_cb_, this, _1);
-
-	interface->registerCallback (f);
-
-	interface->start ();
-	run();
-	interface->stop ();
-}*/
 template<typename PointT> void 
-Viewer<PointT>::addCloud(const ConstPtr& cloud, bool isColored)
+Viewer<PointT>::addCloud(const ConstPtr cloud)
 {
-	viewer->setBackgroundColor(0, 0, 0);
-	/*if (isColored) 
-	{
-		pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> rgb(cloud);
-		viewer->addPointCloud<pcl::PointXYZRGB>(cloud, rgb,"PCL Cloud");
+	//*ptr_cloud = *cloud;
+	if(!viewer->updatePointCloud(cloud, "PCL Cloud")){
+		viewer->setBackgroundColor(0, 0, 0);
+		viewer->addPointCloud<PointT>(cloud, "PCL Cloud");
+		viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "PCL Cloud");
+		viewer->addCoordinateSystem(1.0);
+		viewer->initCameraParameters();
 	}
-	else 
-	{
-		PointCloud<pcl::PointXYZ> out;
-		pcl::copyPointCloud(*cloud,out)
-		viewer->addPointCloud<PointXYZ>(out, "PCL Cloud");
-	}*/
-	viewer->addPointCloud<PointT>(cloud, "PCL Cloud");
-	viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "PCL Cloud");
-	viewer->addCoordinateSystem(1.0);
-	viewer->initCameraParameters();
 };
 
 
@@ -69,18 +43,54 @@ template<typename PointT> void
 Viewer<PointT>::keyboard_callback(const pcl::visualization::KeyboardEvent& event, void*)
 {
 	if (event.getKeyCode() && event.keyDown()) {
-		std::cout << "Key : " << event.getKeyCode() << std::endl;
+		std::cout << "Key : " << event.getKeyCode() << " " << event.getKeySym()  << std::endl;
+		this->lastKeyPressed = event.getKeySym();
 	}
 }
-
+/**
+ * Mouse callback
+ * Necesito arreglar EIGEN Vector 4f
+ */
 template<typename PointT> void 
 Viewer<PointT>::mouse_callback(const pcl::visualization::MouseEvent& event, void*)
 {
 	if (event.getType() == pcl::visualization::MouseEvent::MouseButtonPress && event.getButton() == pcl::visualization::MouseEvent::LeftButton) {
 		std::cout << "Mouse : " << event.getX() << ", " << event.getY() << std::endl;
-	}
-}
+		if(isFirstPoint){
+			firstPoint.x = event.getX();
+			firstPoint.y = event.getY();
 
+			isFirstPoint = false;
+		}else{
+			secondPoint.x = event.getX();
+			secondPoint.y = event.getY();
+			this->rotatePointCloud(firstPoint, secondPoint);
+			firstPoint = secondPoint;
+
+		}
+	}
+	if (event.getType() == pcl::visualization::MouseEvent::MouseButtonRelease && event.getButton() == pcl::visualization::MouseEvent::LeftButton) {
+		isFirstPoint = true;
+	}
+
+}
+template<typename PointT> void
+Viewer<PointT>::rotatePointCloud(const pcl::PointXY& first, const pcl::PointXY& second){
+	float distance = pcl::euclideanDistance(first, second);
+	float theta = pcl::deg2rad(distance);
+	Eigen::Affine3f transform = Eigen::Affine3f::Identity();
+	if(this->lastKeyPressed.compare("y")){
+		transform.rotate (Eigen::AngleAxisf (theta, Eigen::Vector3f::UnitY()));
+	}else
+	if(this->lastKeyPressed.compare("z")){
+			transform.rotate (Eigen::AngleAxisf (theta, Eigen::Vector3f::UnitZ()));
+	}else
+	if(this->lastKeyPressed.compare("x")){
+		transform.rotate (Eigen::AngleAxisf (theta, Eigen::Vector3f::UnitX()));
+	}
+	//pcl::transformPointCloud(*ptr_cloud, *ptr_cloud, transform);
+	//this->addCloud(ptr_cloud);
+}
 template<typename PointT>
 Viewer<PointT>::~Viewer()
 {
