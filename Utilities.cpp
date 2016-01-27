@@ -207,3 +207,72 @@ void Utilities::print(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& cloud)
 	              << " 	"    << cloud->points[i].y
 	              << "	"    << cloud->points[i].z << std::endl;
 }
+
+pcl::PointXYZ& Utilities::mean_point (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud)
+{
+    unsigned int i;
+    unsigned int size = cloud->points.size();
+    double mean_x=0.0, mean_y=0.0, mean_z=0.0;
+    pcl::PointXYZ point;
+
+    std::cout << "Calculating mean point." << std::endl;
+
+    // find mean
+    for (i=0; i<size; i++)
+    {
+        mean_x += cloud->points[i].x;
+        mean_y += cloud->points[i].y;
+        mean_z += cloud->points[i].z;
+    }
+    mean_x /= (double)size;
+    mean_y /= (double)size;
+    mean_z /= (double)size;
+
+    point.x = mean_x;
+    point.y = mean_y;
+    point.z = mean_z;
+
+    return point;
+}
+
+//==================================================================
+void Utilities::normalize_cloud (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud)
+{
+    unsigned int i;
+    unsigned int size = cloud->points.size();
+    pcl::PointXYZ mean_p;
+    double std_x=0.0, std_y=0.0, std_z=0.0;
+    double std_max = 0.0;
+
+    std::cout << "Point cloud normalization:" << std::endl;
+
+    // find the mean point
+    mean_p = mean_point(cloud);
+
+    std::cout << "Finding standard-deviation" << std::endl;
+    // find sigma^2
+    for (i=0; i<size; i++)
+    {
+        std_x += cloud->points[i].x - mean_p.x;
+        std_y += cloud->points[i].y - mean_p.y;
+        std_z += cloud->points[i].z - mean_p.z;
+    }
+    std_x /= (double)size;
+    std_y /= (double)size;
+    std_z /= (double)size;
+
+    // which one is the biggest? we want to normalize with respect
+    // to the biggest component
+    std_max = (std_x>std_y)?std_x:std_y;
+    std_max = (std_z>std_max)?std_z:std_max;
+
+    std::cout << "Scaling point cloud." << std::endl;
+
+    // normalize
+    for (i=0; i<size; i++)
+    {
+        cloud->points[i].x /= std_max;
+        cloud->points[i].y /= std_max;
+        cloud->points[i].z /= std_max;
+    }
+}

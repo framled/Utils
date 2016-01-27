@@ -31,6 +31,8 @@ public:
 	static void convert2XYZRGB(std::vector<pcl::PCLPointCloud2>& input, pcl::PointCloud<pcl::PointXYZRGB>::Ptr& output);
 	static std::string mkdir(const std::string& dir);
 	static void print(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& cloud);
+	static void normalize_cloud (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud);
+	static pcl::PointXYZ& mean_point (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud);
 	~Utilities();
 };
 
