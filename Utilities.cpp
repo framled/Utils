@@ -39,17 +39,17 @@ void Utilities::convert2XYZRGB(std::vector<pcl::PCLPointCloud2>& input, pcl::Poi
 	}
 }
 
-void Utilities::show(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& cloud)
+void Utilities::show(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud)
 {
 	Viewer<pcl::PointXYZ> viewer;
-	viewer.addCloud(cloud);
+	viewer.updateCloud(cloud);
 	viewer.run();
 }
 
-void Utilities::showColor(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& cloud)
+void Utilities::showColor(pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud)
 {
 	Viewer<pcl::PointXYZRGB> viewer;
-	viewer.addCloud(cloud);
+	viewer.updateCloud(cloud);
 	viewer.run();
 }
 
@@ -257,10 +257,11 @@ void Utilities::normalize_cloud (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud)
         std_y += cloud->points[i].y - mean_p.y;
         std_z += cloud->points[i].z - mean_p.z;
     }
+
     std_x /= (double)size;
     std_y /= (double)size;
     std_z /= (double)size;
-
+    std::cout << std_x << " , " << std_y << " , "<< std_z << std::endl;
     // which one is the biggest? we want to normalize with respect
     // to the biggest component
     std_max = (std_x>std_y)?std_x:std_y;
@@ -276,3 +277,16 @@ void Utilities::normalize_cloud (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud)
         cloud->points[i].z /= std_max;
     }
 }
+
+void Utilities::FormatDateTime(
+    std::string const&              format,
+    boost::posix_time::ptime const& date_time,
+    std::string&                    result)
+  {
+    boost::posix_time::time_facet * facet =
+      new boost::posix_time::time_facet(format.c_str());
+    std::ostringstream stream;
+    stream.imbue(std::locale(stream.getloc(), facet));
+    stream << date_time;
+    result = stream.str();
+  }

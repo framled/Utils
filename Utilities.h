@@ -15,8 +15,8 @@ class Utilities
 {
 public:
 	Utilities();
-	static void show(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& cloud);
-	static void showColor(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& cloud);
+	static void show(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud);
+	static void showColor(pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud);
 	static void getFiles(std::string path, std::vector<std::string>& output);
 	static void getFiles(char** argv, std::vector<int>& indices, std::vector<std::string>& output);
 	static void read(std::vector<std::string> paths, std::vector<pcl::PCLPointCloud2>& clouds_blob);
@@ -33,6 +33,7 @@ public:
 	static void print(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& cloud);
 	static void normalize_cloud (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud);
 	static pcl::PointXYZ& mean_point (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud);
+	static void FormatDateTime(std::string const& format, boost::posix_time::ptime const& date_time, std::string& result);
 	~Utilities();
 };
 
