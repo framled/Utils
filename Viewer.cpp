@@ -56,6 +56,12 @@ Viewer<PointT>::save(CloudPtr& cloud){
 	}
 }
 
+/**
+ * Keyboard_callback
+ * Apretar x, y, z para seleccionar el eje de rotacion
+ * Apretar k, para rotar en el angulo seleccionado
+ * CTRL + G para guardar
+ */
 template<typename PointT> void 
 Viewer<PointT>::keyboard_callback(const pcl::visualization::KeyboardEvent& event, void*)
 {
